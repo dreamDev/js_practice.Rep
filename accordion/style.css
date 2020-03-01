@@ -1,0 +1,56 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.accordion__wrapper {
+  padding: 50px;
+  background-color: darkgray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.accordion__item {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.accordion__item-title {
+  position: relative;
+  padding: 0 10px;
+  cursor: pointer;
+  line-height: 50px;
+  border: 1px solid darkgoldenrod;
+}
+
+.accordion__item-title::after {
+  position: absolute;
+  content: "+";
+  right: 10px;
+}
+
+.accordion__item-title.active::after {
+  content: "--";
+}
+
+.accordion__item-text {
+  margin: 5px 0;
+  transition: 0.3s;
+  max-height: 0;
+  padding: 0 10px;
+  overflow: hidden;
+}
+
