@@ -12,13 +12,13 @@
       let result = document.createElement('div');
       result.className = 'result';
       if (e.currentTarget.innerText === '+') {
-        result.innerText = Number1 + Number2
+        result.textContent = Number1 + Number2
       } else if (e.currentTarget.innerText === '-') {
-        result.innerText = Number1 - Number2
+        result.textContent = Number1 - Number2
       } else if (e.currentTarget.innerText === '*') {
-        result.innerText = Number1 * Number2
+        result.textContent = Number1 * Number2
       } else if (e.currentTarget.innerText === '/') {
-        result.innerText = Number1 / Number2
+        result.textContent = Number1 / Number2
       }
       document.body.append(result);
       setTimeout(function () {
