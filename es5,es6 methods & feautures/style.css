@@ -1,0 +1,14 @@
+.container {
+  max-width: 1200px;
+  padding: 15px 0;
+  margin: 0 auto;
+}
+
+.header__title {
+  font-size: 36px;
+  line-height: 36px;
+  text-align: center;
+  padding: 0 15px;
+  color: darkcyan;
+  text-shadow: 0px 2px 5px black;
+}
