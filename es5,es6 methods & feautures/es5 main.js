@@ -244,3 +244,136 @@ array - сам массив.
 
 //*****************************************************//
 
+
+/* Псеводмассив arguments */
+
+//*****************************************************//
+
+(function () {
+
+  // Преобразовываем псевдомассив с аргументами функции в стандартный массив разными методами
+  function setAlphabet() {
+
+    var arr = [];
+    for (var i = 0; i < arguments.length; i++) {
+      arr[i] = arguments[i];
+    }
+
+    var arr2 = [].slice.call(arguments);
+
+    var arr3 = Array.prototype.slice.call(arguments);
+
+    // Теперь у нас есть обычный массив с аргументами нашей функции из псевдомассива arguments и мы можем применять к этому массиву любые array.prototype методы.
+    console.log(arr); // ["a", "b", "c", "d", "e"]
+    console.log(arr2); // ["a", "b", "c", "d", "e"]
+    console.log(arr3); // ["a", "b", "c", "d", "e"]
+
+  }
+
+  setAlphabet('a', 'b', 'c', 'd', 'e');
+
+})();
+
+//*****************************************************//
+
+
+/* Методы, явно указывающие(привязывающие) контекст вызова.
+
+-- call(), apply(), bind() -- 
+
+Методы call() и apply() похожи по своей функциональности, и синтаксис этих методов практически полностью идентичен. Фундаментальное различие между ними заключается в том, что функция call() принимает СПИСОК аргументов, в то время, как функция apply() - одиночный МАССИВ аргументов.
+
+Метод bind() создает обертку над функцией, которая подменяет контекст этой функции. Поведение метода похоже на call() и apply(), но в отличии от них, не вызывает функцию, а лишь возвращает обертку, которую можно вызвать позже.
+
+-- Base function call() & bind()
+-- func.call(thisArg, arg1, arg2, ...);
+
+-- Base function apply()
+-- func.apply(thisArg, [arg1, arg2, ...]);
+
+*/
+
+//*****************************************************//
+/* call() */
+
+(function () {
+
+  var user = {
+    firstName: 'Василий',
+    lastName: 'Петров',
+    patronymic: 'Иванович'
+  }
+
+  function showFullName(firstPart, lastPart) {
+    console.log(this[firstPart] + " " + this[lastPart])
+  }
+
+  function doSomething() {
+    var args = Array.prototype.slice.call(arguments)
+    console.log(args)
+  }
+
+  showFullName.call(user, 'firstName', 'lastName'); // Василий Петров
+  showFullName.call(user, 'firstName', 'patronymic'); // Василий Иванович
+
+  doSomething('water', 'fire', 'earth', 'wind'); // ["water", "fire", "earth", "wind"]
+
+})();
+
+//*****************************************************//
+
+//*****************************************************//
+/* apply() */
+
+(function () {
+
+  var array = [1, 23, 57, 6, -23, 25];
+
+  function sum1(a, b, c) {
+    return a + b + c;
+  }
+
+  function sum2() {
+    for (var i = 0, result = 0; i < arguments.length; result += arguments[i++]);
+    return result;
+  }
+
+  // В метод apply() и call() первым аргументом передается объект который становится контекстом вызова функции. В данном случае этот объект не нужен, т.к. наша задача - это просто вызвать функцию sum с заданными аргументами, т.е. массивом. Ведь этот массив не внутри объекта, а просто "сам по себе". Поэтому контекст ему не нужен.
+  console.log(sum1.apply(null, [1, 2, 3])); // 6
+  console.log(sum2.apply(null, array)); // 89
+
+})();
+
+//*****************************************************//
+
+//*****************************************************//
+/* bind() */
+
+(function () {
+
+  var user = {
+    userName: 'Jack',
+    sayHi: function() {
+      console.log('Hello ' + this.userName);
+    }
+  }
+
+  // Привязываем методу user.sayHi контекст user, что бы не потерять this в методе sayHi во время вызова setTimeout, так как setTimeout сам по себе, не запоминает контекст выполнения. Мы так же можем решить проблему потери this с помощью замыкания.
+  setTimeout(user.sayHi.bind(user), 1000); // Hello Jack
+
+  var users = {
+    data: [
+      {name: 'Tom'},
+      {name: 'Jade'},
+      {name: 'Nina'},
+    ],
+    showSecond: function(event) {
+      console.log(this.data[1].name)
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', users.showSecond.bind(users)); // Jade
+
+})();
+
+//*****************************************************//
