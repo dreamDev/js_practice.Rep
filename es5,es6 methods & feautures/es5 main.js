@@ -283,7 +283,7 @@ array - сам массив.
 
 Методы call() и apply() похожи по своей функциональности, и синтаксис этих методов практически полностью идентичен. Фундаментальное различие между ними заключается в том, что функция call() принимает СПИСОК аргументов, в то время, как функция apply() - одиночный МАССИВ аргументов.
 
-Метод bind() создает обертку над функцией, которая подменяет контекст этой функции. Поведение метода похоже на call() и apply(), но в отличии от них, не вызывает функцию, а лишь возвращает обертку, которую можно вызвать позже.
+Метод bind() создает обертку над функцией, которая подменяет контекст этой функции. Поведение метода похоже на call() и apply(), но в отличии от них, не вызывает функцию, а лишь возвращает обертку(новую функцию), которую можно вызвать позже.
 
 -- Base function call() & bind()
 -- func.call(thisArg, arg1, arg2, ...);
@@ -353,7 +353,7 @@ array - сам массив.
 
   var user = {
     userName: 'Jack',
-    sayHi: function() {
+    sayHi: function () {
       console.log('Hello ' + this.userName);
     }
   }
@@ -363,16 +363,108 @@ array - сам массив.
 
   var users = {
     data: [
-      {name: 'Tom'},
-      {name: 'Jade'},
-      {name: 'Nina'},
+      { name: 'Tom' },
+      { name: 'Jade' },
+      { name: 'Nina' },
     ],
-    showSecond: function(event) {
+    showSecond: function (event) {
       console.log(this.data[1].name)
     }
   }
 
   document.addEventListener('DOMContentLoaded', users.showSecond.bind(users)); // Jade
+
+})();
+
+//*****************************************************//
+
+
+/* Частичное применение функций с помощью bind() 
+
+С помощью метода bind() мы создаем обертку над функцией, которая фиксирует контекст выполнения, но так же, с помощью данного метода, мы можем зафиксировать и аргументы функции.
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  function greet(gender, age, name) {
+
+    var greeting = gender === 'male' ? 'Mr. ' : 'Ms. ';
+
+    if (age > 25) return 'Hello, ' + greeting + name + '.';
+    else return 'Hey, ' + name + '.';
+  }
+
+  // Создаем новую функцию и фиксируем в ней первые 2 аргументы с помощью метода bind().
+  // Первым аргументом в метод bind() передаем null, так как в данном контексте мы не нуждаемся в объекте, соответственно использоваться он не будет.
+  var greetAnAdultMale = greet.bind(null, 'male', 45);
+  var greetAYoungWoman = greet.bind(null, 'female', 28);
+
+  console.log(greetAnAdultMale('John Petrucci')); // Hello, Mr. John Petrucci.
+  console.log(greetAYoungWoman('Sara Brightman')); // Hello, Ms. Sara Brightman.
+
+})();
+
+//*****************************************************//
+
+
+/* Closures, замыкания */
+
+//*****************************************************//
+
+(function () {
+
+  var person1 = { name: 'Darrel', age: 22, job: 'Frontend' };
+  var person2 = { name: 'Kevin', age: 27, job: 'Backend' };
+
+  function logPersonAndSummArgs() {
+
+    // Преобразовавыем псевдомассив arguments в массив с помощью метода Array.from()
+    var args = Array.from(arguments);
+    var result = args.reduce(function (intervalResult, element) {
+      return intervalResult += element;
+    });
+
+    console.log(`Person: ${this.name}, ${this.age}, ${this.job}, Result: ${result}`);
+  }
+
+  function bind(context, fn) {
+    return function () {
+      fn.apply(context, arguments);
+    }
+  }
+
+  bind(person1, logPersonAndSummArgs)(1, 5, 4); // Person: Darrel, 22, Result: 10
+  bind(person2, logPersonAndSummArgs)(23, 34, 1); // Person: Kevin, 27, Result: 58
+
+})();
+
+//*****************************************************//
+
+
+/* Прототипное наследование 
+
+Приведенный ниже метод удобен тем, что нам не нужно будет импортировать функцию при использовании модулей.
+Вместо этого, мы можем сразу применить созданный нами метод непосредственно к любому массиву(так как в данном случае мы написали метод для глобального класса Array), так как этот метод будет наследоваться всеми массивами.
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  var devArray = [1, 2, 3, 4, 5];
+
+  // Теперь прототип глобального объекта Array имеет метод multBy, это значит, что теперь к любому созданному нами массиву(в любом контексте, в глобальном в том числе) мы можем применить метод multBy.
+  Array.prototype.multBy = function (n) {
+    return this.map(function (element) {
+      return element *= n;
+    })
+  };
+
+  console.log(devArray.multBy(5)); // [5, 10, 15, 20, 25]
 
 })();
 
