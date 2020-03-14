@@ -223,7 +223,7 @@
     }
   }
 
-  console.log(thirdPerson.greet()); // this.userName = 'Jack', this = thirdPerson {...}
+  thirdPerson.greet(); // this.userName = 'Jack', this = thirdPerson {...}
 
 })();
 
@@ -240,6 +240,8 @@
 2) Для for...in обход перечисляемых свойств объекта осуществляется в произвольном порядке.
 3) Для for...of обход происходит в соответствии с тем, какой порядок определен в итерируемом объекте.
 
+Важно помнить, что цикл for...in так же пробегается по прототипу заданного объекта, что бы не выводить поля из прототипа, необходимо делать промерку с помощью метода Object.prototype.hasOwnProperty().
+
 */
 
 //*****************************************************//
@@ -252,7 +254,7 @@
 
   // Цикл for...in стандарта es5 вместо значения будет выводить его порядковый номер, то есть индекс.
   for(let index in names) {
-    // Данным условием мы не позволяем циклу вывести наследуемые свойства, так как цикл for...in пройдёт по всем перечисляемым свойствам объекта, а также тем, что он унаследует от конструктора прототипа (свойства объекта в цепи прототипа). Это означает, что без данной проверки, цикл так же выведет созданный нами раннее метод multBy().
+    // Данным условием мы не позволяем циклу вывести наследуемые свойства из прототипа, так как цикл for...in пройдёт по всем перечисляемым свойствам объекта, а также тем, что он унаследует от конструктора прототипа (свойства объекта в цепи прототипа). Это означает, что без данной проверки, цикл так же выведет созданный нами раннее метод multBy().
     if (names.hasOwnProperty(index))
 
     console.log(index); // 0 1 2 3 4
@@ -260,13 +262,13 @@
 
   // Решение проблемы на es5
   for(let index in names) {
-    // Данным условием мы не позволяем циклу вывести наследуемые свойства, так как цикл for...in пройдёт по всем перечисляемым свойствам объекта, а также тем, что он унаследует от конструктора прототипа (свойства объекта в цепи прототипа). Это означает, что без данной проверки, цикл так же выведет созданный нами раннее метод multBy().
+    // Делаем такую же проверку, как в примере выше.
     if (names.hasOwnProperty(index))
 
     console.log(names[index]); // Tomas Jhonny Steve Kobe Ludvig
   }
 
-  // Выводим значения массива новым циклом es6 for...of. В данном случае нам не нужна проверка, как в примере выше.
+  // Выводим значения массива новым циклом es6 for...of. В данном случае нам не нужна проверка на собственные свойства, как в примере выше.
   for(let name of names) {
     console.log(name); // Tomas Jhonny Steve Kobe Ludvig
   }
@@ -294,6 +296,278 @@
   } 
   
   */
+
+})();
+
+//*****************************************************//
+
+
+/* Объекты: Создание и конфигурация 
+
+Метод Object.create() создаёт новый объект с указанными объектом прототипа и свойствами.
+
+-- Base syntax:
+-- Object.create(proto[, propertiesObject])
+
+Помимо значения value, свойства объекта имеют три специальных атрибута (так называемые «флаги» или дескрипторы).
+
+- writable – если true, свойство можно изменить, иначе оно только для чтения.
+- enumerable – если true, свойство перечисляется в циклах, в противном случае циклы его игнорируют.
+- configurable – если true, свойство можно удалить, а эти атрибуты можно изменять, иначе этого делать нельзя.
+
+Когда мы создаём свойство «обычным способом»(литерал объектом), все они имеют значение true. Но мы можем изменить их в любое время.
+
+Но когда мы создаем объект с помощью Object.create(), все дескрипторы получают значение false.
+
+Метод Object.getOwnPropertyDescriptor() позволяет получить полную информацию о свойстве.
+Чтобы изменить флаги, мы можем использовать метод Object.defineProperty() или Object.defineProperties() для того, что бы изменить дескрипторы у нескольких свойств сразу.
+
+-- Сеттеры(set()) и Геттеры(get())
+
+Есть два типа свойств объекта:
+- Первый тип это свойства-данные (data properties).
+- Второй тип свойств это свойства-аксессоры (accessor properties).
+
+По своей сути свойства-аксессоры(сеттеры и геттеры) это функции, которые используются для ПРИСВОЕНИЯ(записи) и ПОЛУЧЕНИЯ(чтения) значения, но во внешнем коде они выглядят как обычные свойства объекта.
+
+Когда мы читаем свойство свойство-аксессор срабатывает как геттер, когда мы присваиваем(записываем) значение свойство срабатывает как сеттер.
+
+Дескрипторы свойств-аксессоров отличаются от «обычных» свойств-данных!
+
+Свойства-аксессоры НЕ имеют value и writable, но взамен предлагают функции get и set.
+
+То есть, дескриптор аксессора может иметь:
+- get – функция без аргументов, которая сработает при чтении свойства,
+- set – функция, принимающая один аргумент, вызываемая при присвоении свойства,
+- enumerable – то же самое, что и для свойств-данных,
+- configurable – то же самое, что и для свойств-данных.
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  // Example 1: Object.create()
+
+  const person = Object.create(
+    // Первым параметром метода Object.create() задается объект в котором мы указываем прототип нового создаваемого объекта. То есть указываем объект, от которого в данном случае person будет наследовать.
+    // Кроме объекта мы так же можем указать методы, которые нужно наследовать.
+    // В es6 мы можем объявлять методы сразу, без двоеточия и ключевого слова function.
+    {
+      getNameAndAge() {
+        return this.name + " " + this.age;
+      }
+    }, 
+    {
+      name: {
+        value: 'Lena',
+        enumerable: true,
+        configurable: true,
+        writable: false
+      },
+      age: {
+        value: 23,
+        enumerable: true,
+        writable: true,
+        configurable: false
+      },
+      job: {
+        value: 'Babysitter',
+        enumerable: true,
+        configurable: false,
+        writable: true
+      },
+      birthYear: {
+        get() {
+          return new Date().getFullYear() - this.age;
+        }
+      },
+      ageAndJob: {
+        get() {
+          return `Age: ${this.age}, Job: ${this.job}.`;
+        },
+        set(value) {
+          [this.age, this.job] = value.split(" ");
+        }
+      }
+    }
+  );
+
+  console.log(person.getNameAndAge()); // Lena 23
+
+  person.ageAndJob = "27 Frontend";
+  console.log(person.birthYear); // 1993
+
+  let descriptor = Object.getOwnPropertyDescriptor(person, 'job');
+  console.log(descriptor); // {value: "Frontend", writable: true, enumerable: true, configurable: false}
+
+  delete person.age; // false
+  person.name = 'Nina'; // false
+  
+  for (let key in person) {
+    if (person.hasOwnProperty(key))
+    console.log(person[key]); // Lena 27 Frontend
+  }
+
+  console.log(person); // {name: "Lena", age: "27", job: "Frontend"}
+
+// Example 2: Объектный литерал
+
+  let phone = '333-666';
+  let adress = 'Baltic street 13';
+  let gender = 'male';
+
+  const citizen = {
+    name: 'Vasya',
+    phone,
+    adress,
+    gender,
+    saiHi() {
+      console.log('Hello', this.name);
+    }
+  }
+
+  console.log(citizen); // {name: "Vasya", phone: "333-666", adress: "Baltic street 13", gender: "male", saiHi: ƒ}
+  citizen.saiHi(); // Hello Vasya
+
+})();
+
+//*****************************************************//
+
+
+/* Class (Классы) 
+
+Class declaration:
+
+-- class Task {};
+
+Class expression:
+
+-- let task = class Task {};
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  // Example 1:
+
+  class Animal {
+
+    // Определяем свтические свойства и методы, которые будут присутствовать только у самого КЛАССА, в данном случае Animal. В инстансе animal доступа к ним не будет.
+    // Но следует помнить, что статические методы и свойства будут доступны наследуемым КЛАССАМ.
+    static type = 'ANIMAL'
+    static jump() {
+      let counter = 0;
+      let interval = setInterval(() => {
+        console.log('Animal is jumping');
+        counter++;
+        if (counter == 3)
+        clearInterval(interval);
+      }, 1500)
+    }
+
+    // В методе constructor мы определяем поля нашего класса, с которыми он будет вызываться и создаваться новый инстанс.
+    // Передавать свойства можно в виде объекта, как в данном примере.
+    // Так же следует помнить, что конструктор родительского класса наследуется подклассами.
+    constructor(options) {
+      this.name = options.name
+      this.age = options.age
+      this.hasTail = options.hasTail
+    }
+
+    // Методы будут записываться в прототип инстанса, а не в сам инстанс.
+    // Методы так же будут наследоваться другими классами и инстансами.
+    voice() {
+      console.log('Hi, i am ' + this.name);
+    }
+
+    // Сеттеры и геттеры так же наследуются классами и инстансами
+    get ageInfo() {
+      return this.age * 2;
+    }
+
+    set ageInfo(newAge) {
+      this.age = newAge;
+    }
+
+  }
+
+  // Ключевое слово extends означает, что мы будем наследовать от класса Animal.
+  class Fish extends Animal {
+    
+    // Важно помнить, что все дочерние методы и свойства с одинаковым именем перетирают родительские свойства и методы. 
+    static type = 'FISH'
+
+    constructor(options) {
+      // Чтобы наследовать от другого класса, мы должны вызвать его конструктор. Для этого нужно использовать ключевое слово super, которое по сути является методом, и передать в него набор опций.
+      super(options)
+      this.isPredator = options.isPredator
+    }
+
+    catch() {
+      console.log("I'l catch any fish and eat them!")
+    }
+
+  }
+
+  const lion = new Animal({
+    name: 'Lion',
+    age: 7,
+    hasTail: true
+  });
+
+  const pike = new Fish({
+    name: 'Pike',
+    age: 3,
+    hasTail: true,
+    isPredator: true
+  })
+
+  console.log(lion); // Animal {name: "Lion", age: 7, hasTail: true}
+  console.log(pike); // Fish {name: "Pike", age: 3, hasTail: true, isPredator: true}
+
+  Animal.jump(); // x3 Animal is jumping
+  Fish.jump(); // x3 Animal is jumping
+
+  // Example 2:
+
+  class Component {
+    constructor(selector) {
+      // Обычно через доллар обозначают переменную, которые содержат в себе какую то DOM ноду.
+      this.$el = document.querySelector(selector)
+    }
+    hide() {
+      this.$el.style.display = 'none'
+    }
+    show() {
+      this.$el.style.display = 'block'
+    }
+  }
+
+  class Shadow extends Component {
+    constructor(options) {
+      // После того, как мы вызвали метод super, запускается механизм наследования конструктора и нам становятся доступны переменные родительского класса, соответственно мы можем к ним обращаться, а так же расширять конструктор другими своими переменными.
+      // По сути этот прием является аналогом es5, когда мы в конструкторе дочернего класса вызывали свойства родительского с помощю Obj.call(this, ...props).
+      super(options.selector)
+      this.$el.style.cssText = options.cssText
+    }
+  }
+
+  const bodyShadow = new Shadow({
+    selector: '.body-shadow',
+    cssText: `position: absolute;
+              top: -10px;
+              left: 0;
+              width: 100%;
+              height: 10px;
+              box-shadow: 0px 10px 20px rgba(255, 255, 255, 0.8);
+              z-index: 100;`
+  });
+
+  console.log(bodyShadow) // Shadow {$el: div.body-shadow}
 
 })();
 
