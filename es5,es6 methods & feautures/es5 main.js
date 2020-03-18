@@ -30,6 +30,12 @@
 
 Метод reduceRight() применяет callback функцию к каждому элементу массива (справа-налево), возвращая одно результирующее значение.
 
+-- find(), findIndex() -- 
+
+Метод find() возвращает значение первого найденного в массиве элемента, которое удовлетворяет условию переданному в callback функции. В противном случае возвращается undefined.
+
+Метод findIndex() возвращает индекс в массиве, если элемент удовлетворяет условию проверяющей функции. В противном случае возвращается -1.
+
 
 --------------------------------------------------------
 
@@ -243,6 +249,31 @@ array - сам массив.
 })();
 
 //*****************************************************//
+/* find(), findIndex() */
+
+(function () {
+
+  var response = [{ index: 0, name: "Tom", gender: "male", age: 20, isActive: true },
+  { index: 1, name: "Robert", gender: "female", age: 22, isActive: false },
+  { index: 2, name: "Nina", gender: "female", age: 17, isActive: true },
+  { index: 3, name: "Korben", gender: "male", age: 32, isActive: false },
+  { index: 4, name: "Angela", gender: "female", age: 27, isActive: false }];
+
+  var korben = response.find(function (element) {
+    return element.name === "Korben";
+  });
+
+  console.log(korben); // {index: 3, name: "Korben", gender: "male", age: 32, isActive: false}
+
+  var korbenIndex = response.findIndex(function (element) {
+    return element.name === "Korben";
+  });
+
+  console.log(korbenIndex); // 3
+
+})();
+
+//*****************************************************//
 
 
 /* Псеводмассив arguments */
@@ -358,7 +389,7 @@ array - сам массив.
     }
   }
 
-  // Привязываем методу user.sayHi контекст user, что бы не потерять this в методе sayHi во время вызова setTimeout, так как setTimeout сам по себе, не запоминает контекст выполнения. Мы так же можем решить проблему потери this с помощью замыкания.
+  // Привязываем методу user.sayHi контекст user, что бы не потерять this в методе sayHi во время вызова setTimeout, так как setTimeout не запоминает контекст выполнения. Мы так же можем решить проблему потери this с помощью замыкания.
   setTimeout(user.sayHi.bind(user), 1000); // Hello Jack
 
   var users = {
@@ -465,6 +496,30 @@ array - сам массив.
   };
 
   console.log(devArray.multBy(5)); // [5, 10, 15, 20, 25]
+
+})();
+
+//*****************************************************//
+
+
+/* Измерение производительности блоков кода 
+
+Используйте console.time() для измерения производетельности отдельных блоков кода.
+
+В качестве параметра в функции console.time() и console.timeEnd() передаётся строка — имя, которое будет использовано обеими функциями в качестве сигнала для начала и окончания времени измерений.
+
+*/
+
+//*****************************************************//
+
+(function () {
+  
+  console.time('Tested Array');
+  var arr = [];
+  for (var i = 0; i < 1000; i++) {
+    arr.push({ i: i });
+  }
+  console.timeEnd('Tested Array'); // Tested Array: 0.365966796875ms
 
 })();
 

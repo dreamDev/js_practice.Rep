@@ -1,17 +1,61 @@
 // ES6
 
+/* ES6 Array methods */
+
+//*****************************************************//
+
+(function () {
+
+  // Practice example
+
+  const response = [{ index: 0, name: "Tom", gender: "male", age: 20, isActive: true },
+                    { index: 1, name: "Robert", gender: "female", age: 22, isActive: false },
+                    { index: 2, name: "Nina", gender: "female", age: 17, isActive: true },
+                    { index: 3, name: "Korben", gender: "male", age: 32, isActive: false },
+                    { index: 4, name: "Angela", gender: "female", age: 27, isActive: false }];
+
+  const users = [{index: undefined, name: 'Rita', gender: 'female', age: 39, isActive: false},
+                  {index: undefined, name: 'John', gender: 'male', age: 25, isActive: true},
+                  {index: undefined, name: 'Kobe', gender: 'male', age: 22, isActive: true},];
+
+  let result = [...response, ...users]
+    .filter(elem => elem.age > 20)
+    .map((elem, i) => {
+      return {
+        info: `${elem.name} ${elem.gender} ${elem.age}`,
+        userId: elem.index = i + 1,
+        isActive: false
+      }
+    })
+
+  console.log(result); 
+  /* (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+  0: {info: "Robert female 22", userId: 1, isActive: false}
+  1: {info: "Korben male 32", userId: 2, isActive: false}
+  2: {info: "Angela female 27", userId: 3, isActive: false}
+  3: {info: "Rita female 39", userId: 4, isActive: false}
+  4: {info: "John male 25", userId: 5, isActive: false}
+  5: {info: "Kobe male 22", userId: 6, isActive: false}
+  length: 6
+  __proto__: Array(0) */
+
+})();
+
+//*****************************************************//
+
 /* Spread(расширение) и Rest(остаточные параметры) операторы 
 
-Когда мы видим "..." в коде, это могут быть как spread, так и rest операторы.
+Когда мы видим "..." в коде, это могут быть как Spread, так и Rest операторы.
 
 Как отличить их друг от друга:
-
-Если ... располагается в конце списка аргументов функции, то это «остаточные параметры». Он собирает остальные неуказанные аргументы и делает из них массив.
-Если ... встретился в вызове функции или где-либо ещё, то это «оператор расширения». Он извлекает элементы из массива.
+-- Если ... располагается в конце списка аргументов функции, то это «остаточные параметры». Он собирает остальные неуказанные аргументы и делает из них массив. Также Rest оператор может распологаться в конце шаблона при деструктуризации. Он так же соберет все остаточные элементы в массив или объект в зависимости от того, что мы хотим деструктуризировать.
+-- Если ... встретился в вызове функции или где-либо ещё, то это «оператор расширения». Он извлекает элементы из массива.
 Полезно запомнить:
 
 Остаточные параметры используются, чтобы создавать новые функции с неопределённым числом аргументов.
+
 С помощью оператора расширения можно вставить массив в функцию, которая по умолчанию работает с обычным списком аргументов.
+
 Вместе эти конструкции помогают легко преобразовывать наборы значений в массивы и обратно.
 
 */
@@ -19,12 +63,15 @@
 //*****************************************************//
 /* Spread оператор */
 
+// Важно помнить, что Spread оператор работает с ЛЮБЫМ перебираемым(итерируемым) объектом, например строкой.
+
 (function () {
 
-  // Example 1: Arrays
+  // Example 1: Arrays and Strings
 
   const array1 = [1, 2, 3, 4];
   const array2 = [5, 6, 7, 8];
+  const string = "John";
 
   // Реализация склеивания двух массивов в один на es5.
   const merge1 = [].concat(array1, array2);
@@ -34,6 +81,11 @@
   // Реализация склеивания двух массивов в один на es6 с помощью Spread оператора.
   const merge2 = [...array1, ...array2];
   console.log(merge2); //  [1, 2, 3, 4, 5, 6, 7, 8]
+  
+  // Разбиваем строку на символы.
+  console.log(...string); // J o h n
+  console.log([...string]); // ["J", "o", "h", "n"]
+
 
   // Example 2: Objects
 
@@ -55,12 +107,13 @@
   const person = Object.assign(user, job); // {name: "Tom", age: 22, difficult: "hard", pos: "Frontend", level: "Middle"}
   console.log(person);
 
-  // Метод копирования через Spread на es6.
+  // Метод клонирования через Spread на es6.
   // В этой реализации свойства с одинаковым именем также перетираются как и в предыдущем примере с Object assign().
   const secondPerson = {
     ...user,
     ...job
   }
+  // Теперь вы имеем новый объект со свойствами, которые были скопированы из окбъектов, которые указали.
   console.log(secondPerson); // {name: "Tom", age: 22, difficult: "hard", pos: "Frontend", level: "Middle"}
 
   // Example 3: Functions
@@ -77,6 +130,20 @@
 
   // Реализация на es6 с помощью Spread оператора.
   console.log(sum(...array3)); // 6
+
+  // Example 4: Practice
+
+  // Выбираем все span елементы на странице с помощью метода querySelectorAll() и получаем коллекцию узлов типа NodeList. NodeList не является массивом(Array), но его вполне возможно перебрать при помощи метода forEach(). Однако другие методы массивов нам будут недоступны. NodeList также можно конвертировать в Array при помощи Array.from()
+  let spans = document.querySelectorAll('span');
+
+  // С помощью Spread оператора мы "конвертировали" NodeList в Array и теперь можем применять любые методы массивов.
+  let nodes = [...spans];
+  console.log(nodes, Array.isArray(nodes)) // [span, span, span, span] true
+
+  // Конвертируем NodeList в Array с помощью Array.from().
+  let divs = Array.from(document.querySelectorAll('div'));
+
+  console.log(divs, Array.isArray(divs)); // [div.body-shadow, div.container, div.background-img, div.box, div.content] true
 
 })();
 
@@ -237,7 +304,7 @@
 Различия между for...of и for...in:
 
 1) Оба оператора, и for...in и for...of производят обход объектов . Разница в том как они это делают.
-2) Для for...in обход перечисляемых свойств объекта осуществляется в произвольном порядке.
+2) Для for...in обход перечисляемых(enumerable) свойств объекта осуществляется в произвольном порядке.
 3) Для for...of обход происходит в соответствии с тем, какой порядок определен в итерируемом объекте.
 
 Важно помнить, что цикл for...in так же пробегается по прототипу заданного объекта, что бы не выводить поля из прототипа, необходимо делать промерку с помощью метода Object.prototype.hasOwnProperty().
@@ -456,7 +523,7 @@ Class expression:
 
   class Animal {
 
-    // Определяем свтические свойства и методы, которые будут присутствовать только у самого КЛАССА, в данном случае Animal. В инстансе animal доступа к ним не будет.
+    // Определяем свтические свойства и методы, которые будут присутствовать только у самого КЛАССА, в данном случае Animal. В инстансе lion доступа к ним не будет.
     // Но следует помнить, что статические методы и свойства будут доступны наследуемым КЛАССАМ.
     static type = 'ANIMAL'
     static jump() {
@@ -568,6 +635,127 @@ Class expression:
   });
 
   console.log(bodyShadow) // Shadow {$el: div.body-shadow}
+
+})();
+
+//*****************************************************//
+
+
+/* Деструктурирующее присваивание
+
+Деструктурирующее присваивание – это специальный синтаксис, который позволяет нам «распаковать» массивы или объекты в кучу переменных, так как иногда они более удобны. Деструктуризация также прекрасно работает со сложными функциями, которые имеют много параметров, значений по умолчанию и так далее.
+
+Синтаксис деструктурирующего выражения всегда будет одинаковый и будет состоять из двух частей:
+1) Это деструктурирующее выражение с переменными.
+2) Массив или объект значения которых должны быть взяты.
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  // Example 1: Array destructing
+
+  const array1 = ['Lena', 'Jinni', 'Alladin'];
+  const array2 = ['Nina', 'Alla', 'Tom', 'John', 'Rob', 'Kenni', 'Jordan'];
+
+  // Деструктурирующее присваивание es5
+  let lena = array1[0];
+  let jinni = array1[1];
+  let alladin = array1[2];
+
+  console.log(lena, jinni, alladin); // Lena Jinni Alladin
+
+  // Деструктурирующее присваивание es6
+  // В данном примере, с левой части находится деструктурирующее выражение, а с правой части массив, значения которого будут присвоены внутри деструктурирующего выражения.
+  // Не забываем о том, что мы можем использовать rest оператор и "сложить" в него(масиив) остаточные элементы.
+  let [nina, alla, tom, ...rest] = array2;
+
+  // Деструктурирующее присваивание в одну строку.
+  let [name, age, id] = ['name', 'age', 'id'];
+
+  console.log(nina, alla, tom, rest); // Nina Alla Tom ["John", "Rob", "Kenni", "Jordan"]
+  console.log(name, age, id); // name age id
+
+  // Дуструктуризация многомерного массива
+  const array3 = [5, 10, 15, [20, 25]];
+
+  let [a, b, c, [d, e]] = array3;
+
+  console.log(a, b, c, d, e); // 5 10 15 20 25
+
+  // Мы так же можем использовать дефолтные значения при деструктуризации как массивов, так и объектов.
+
+  // С помощью пробела и запятой, мы можем пропускать значения, в данном примере мы пропускаем первое значение, но так как у него есть дефолтное значение, то оно и присваивается.
+  let [arg1 = 'defaultValue', arg2] = [ , 'Value'];
+
+  console.log(arg1, arg2) // defaultValue Value
+
+  // Example 2: Objects
+
+  // У нас есть существующий объект с правой стороны, который мы хотим разделить на переменные. Левая сторона содержит «шаблон» для соответствующих свойств. В простом случае это список названий переменных в {...}.
+
+  let params = {
+    isActive: true,
+    color: 'red',
+    fontSize: 12
+  };
+  
+  // Свойства params.isActive, params.color и params.fontSize присваиваются соответствующим переменным. Порядок перечисления свойств в шаблоне и объекте не имеет значения.
+  let {isActive, color, fontSize} = params;
+
+  console.log(isActive, color, fontSize); // true "red" 12
+  
+  // Если мы хотим присвоить свойство объекта переменной с другим названием, например, свойство params.fontSize присвоить переменной fz, то мы можем использовать двоеточие:
+
+  // { sourceProperty: targetVariable }
+  let {fontSize: fz, color: col, isActive: isOn} = params;
+
+  console.log(isOn, col, fz); // true "red" 12
+
+  // Мы так же можем использовать заранее созданные переменные, что бы записать в них части массива или обкта.
+
+  let firstArg, secondArg;
+
+  // В подобном случае, что бы не получить ошибку, мы должны наше выражение обернуть в круглые скобки, иначе интерпритатор посчитает, что это обычный блок кода, а не деструктуризация и выдаст ошибку.
+  ({firstArg, secondArg = 'Petrucci', thirdArg: {job: work}} = {firstArg: 'Tom', thirdArg: {job: 'SMM'}});
+
+  console.log(firstArg, secondArg, work); // Tom Petrucci SMM
+
+  // Example 3: Functions
+
+  // Мы можем указать параметры как объект, и функция немедленно деструктурирует его в переменные:
+  
+  let options = {
+    title: "My menu",
+    items: ["Item1", "Item2"]
+  };
+  
+  // ...и она немедленно извлекает свойства в переменные
+  function showMenu({ title = "Untitled", width = 200, height = 100, items = [] }) {
+    // title, items – взято из options,
+    // width, height – используются значения по умолчанию
+    console.log(`${title} ${width} ${height}`); // My Menu 200 100
+    console.log(items); // [Item1, Item2]
+  }
+
+  showMenu(options);
+
+  // Мы также можем использовать более сложное деструктурирование с вложенными объектами и двоеточием:
+
+  function showMenu2({
+    title = "Untitled",
+    width: w = 100,  // width присваиваем в w
+    height: h = 200, // height присваиваем в h
+    items: [item1, item2] // первый элемент items присваивается в item1, второй в item2
+  }) {
+    console.log(`${title} ${w} ${h}`); // My Menu 100 200
+    console.log(item1); // строка Item1
+    console.log(item2); // строка Item2
+  }
+  
+  showMenu2(options);
 
 })();
 
