@@ -760,3 +760,255 @@ Class expression:
 })();
 
 //*****************************************************//
+
+
+/* Map, Set 
+
+Map – это коллекция ключ/значение, как и Object. Но основное отличие в том, что Map позволяет использовать ключи ЛЮБОГО типа.
+
+Методы и свойства Map:
+-- new Map() – создаёт коллекцию.
+-- map.set(key, value) – записывает по ключу key значение value. Возвращает объект Map
+-- map.get(key) – возвращает значение по ключу или undefined, если ключ key отсутствует.
+-- map.has(key) – возвращает true, если ключ key присутствует в коллекции, иначе false.
+-- map.delete(key) – удаляет элемент по ключу key. При успешном удалении возвращает true, иначе, например если нет такого ключа, false.
+-- map.clear() – очищает коллекцию от всех элементов.
+-- map.size – возвращает текущее количество элементов.
+
+Объект Set – это особый вид коллекции: «множество» УНИКАЛЬНЫХ значений (без ключей), где каждое значение может появляться только ОДИН раз.
+
+Основные методы Set это:
+-- new Set(iterable) – создаёт Set, и если в качестве аргумента был предоставлен итерируемый объект (обычно это массив), то копирует его значения в новый Set.
+-- set.add(value) – добавляет значение (если оно уже есть, то ничего не делает), возвращает тот же объект set.
+-- set.delete(value) – удаляет значение, возвращает true если value было в множестве на момент вызова, иначе false.
+-- set.has(value) – возвращает true, если значение присутствует в множестве, иначе false.
+-- set.clear() – удаляет все имеющиеся значения.
+-- set.size – возвращает количество элементов в множестве.
+
+Перебор коллекций Map и Set:
+
+Map:
+-- map.keys() – возвращает итерируемый объект по ключам,
+-- map.values() – возвращает итерируемый объект по значениям,
+-- map.entries() – возвращает итерируемый объект по парам вида [ключ, значение], этот вариант используется по умолчанию в for..of.
+
+Set имеет те же встроенные методы, что и Map:
+-- set.keys() – возвращает перебираемый объект для значений,
+-- set.values() – то же самое, что и set.keys(), присутствует для обратной совместимости с Map,
+-- set.entries() – возвращает перебираемый объект для пар вида [значение, значение], присутствует для обратной совместимости с Map.
+
+*/
+
+//*****************************************************//
+
+// Example 1: Map
+
+(function () {
+
+  const obj = {
+    name: 'Ruslan',
+    age: 26,
+    job: 'Frontend'
+  }
+
+  const entries = [
+    ['name', 'Ruslan'],
+    ['age', 26],
+    ['job', 'Frontend']
+  ]
+
+  // Object.entries() возвращает массив, элементами которого являются массивы, соответсвующие перечисляемому свойству пары [key, value], найденной прямо в object. Порядок свойств тот же, что и при прохождении циклом по свойствам объекта вручную.
+  console.log(Object.entries(obj)); // [['name', 'Ruslan'], ['age', 26], ['job', 'Frontend']]
+
+  // Метод Object.fromEntries() принимает список пар ключ-значение и возвращает новый объект, свойства которого задаются этими записями.
+  console.log(Object.fromEntries(entries)); // {name: "Ruslan", age: 26, job: "Frontend"}
+
+  // В конструктор передаем многомерный массив с внутренними массивами содержащими key/value.
+  const map = new Map(entries);
+  const map2 = new Map(Object.entries(obj));
+
+  // Map может использовать ЛЮБЫЕ типы данных в качестве ключей, даже NaN. Например объект:
+  map.set(obj, 'user')
+
+  // Получаем значение по ключу.
+  console.log(map.get(obj)); // user
+  console.log(map.get('name')); // Ruslan
+
+  map.delete('job')
+
+  console.log(map); // Map(3) {"name" => "Ruslan", "age" => 26, {…} => "user"}
+  console.log(map.size); // 3
+
+  console.log(map2); // Map(3) {"name" => "Ruslan", "age" => 26, "job" => "Frontend"}
+
+  // Итерация
+
+  for (let [key, value] of map) {
+    console.log(key, value) // name Ruslan  age 26  {...} "user"
+  }
+
+  for (let value of map.values()) {
+    console.log(value) // Ruslan 26 user
+  }
+
+  for (let keys of map.keys()) {
+    console.log(keys) // name age {...}
+  }
+
+  map.forEach((value, key, map) => {
+    console.log(key, value) // name Ruslan  age 26  {...} "user"
+  })
+
+  // Получение массива из Map
+
+  const arr1 = [...map]
+  const arr2 = Array.from(map)
+  console.log(arr1); // [['name', 'Ruslan'], ['age', 26], [{...}, "user"]]
+  console.log(arr2); // [['name', 'Ruslan'], ['age', 26], [{...}, "user"]] 
+
+  // Получение объекта из Map
+
+  const mapObj = Object.fromEntries(map.entries())
+
+  // Следует обратить внимание на то, что при использовании объекта в качестве ключа, он будет сконвертирован в [object Object], так как в обычных объектах, не могут быть ключами другие объекты.
+  console.log(mapObj); // {name: "Ruslan", age: 26, [object Object]: "user"}
+
+  // Practice example
+
+  const users = [
+    {name: 'Elena'},
+    {name: 'Ruslan'},
+    {name: 'Larisa'}
+  ]
+
+  const visits = new Map()
+
+  visits
+    .set(users[0], new Date())
+    .set(users[1], new Date(new Date().getTime() + 1000 * 60))
+    .set(users[2], new Date(new Date().getTime() + 5000 * 60))
+
+  const lastVisit = user => visits.get(user)
+
+  console.log(lastVisit(users[1])) // Sat Mar 28 2020 16:56:43 GMT+0700 (Новосибирск, стандартное время)
+  console.log(lastVisit(users[2])) // Sat Mar 28 2020 17:02:00 GMT+0700 (Новосибирск, стандартное время)
+
+})();
+
+// Example 2: Set
+
+(function () {
+
+  const set = new Set([1, 2, 3, 4, 5, 5, 6])
+
+  console.log(set); // Set(6) {1, 2, 3, 4, 5, 6}
+
+  set
+    .add(10)
+    .add(20)
+    .add(20)
+
+  set.delete(3)
+  console.log(set.has(3)) // false
+  console.log(set.size) // 7
+  console.log(set); // Set(7) {1, 2, 4, 5, 6, 10, 20}
+
+  // Методы values() и keys() выдают нам один и тот же результат, так как в Set хранятся лишь значения.
+  // При использовании метода entries(), ключи, будут такие же, как и значения, то есть дублируются.
+  console.log(set.values()) // SetIterator {1, 2, 4, 5, 6, …}
+  console.log(set.keys()) // SetIterator {1, 2, 4, 5, 6, …}
+
+  // Итерация
+  for (let key of set) {
+    console.log(key) // 1 2 4 5 6 10 20
+  }
+
+  // Practice example
+
+  const unicValues = (array) => [...new Set(array)]
+
+  console.log(unicValues([1, 2, 3, 4, 4, 4, 5, 6, 6, 6,])) // Array(6) [1, 2, 3, 4, 5, 6]
+
+})();
+
+//*****************************************************//
+
+
+/* WeakMap, WeakSet
+
+WeakMap – это Map-подобная коллекция, позволяющая использовать в качестве ключей только объекты, и автоматически удаляющая их вместе с соответствующими значениями, как только они становятся недостижимыми иными путями.
+
+WeakMap не предотвращает удаление объектов сборщиком мусора, когда эти объекты выступают в качестве ключей.
+Если мы используем объект в качестве ключа и если больше нет ссылок на этот объект, то он будет удалён из памяти (и из объекта WeakMap) автоматически.
+
+WeakMap не поддерживает перебор и методы keys(), values(), entries(), так что нет способа взять все ключи или значения из неё.
+
+В WeakMap присутствуют только следующие методы:
+-- weakMap.get(key)
+-- weakMap.set(key, value)
+-- weakMap.delete(key)
+-- weakMap.has(key)
+
+WeakSet – это Set-подобная коллекция, которая хранит только объекты и удаляет их, как только они становятся недостижимыми иными путями.
+
+Коллекция WeakSet ведёт себя похоже:
+-- Она аналогична Set, но мы можем добавлять в WeakSet только объекты (не примитивные значения).
+-- Объект присутствует в множестве только до тех пор, пока доступен где-то ещё.
+-- Как и Set, она поддерживает add, has и delete, но не size, keys() и не является перебираемой.
+
+*/
+
+//*****************************************************//
+
+// Example 1: WeakMap
+
+(function () {
+
+  const cache = new WeakMap()
+
+  const cacheUser = user => {
+    if (!cache.has(user)) cache.set(user, Date.now())
+    return cache.get(user)
+  }
+
+  let user1 = {name: 'Elena'}
+  let user2 = {name: 'Ruslan'}
+
+  cacheUser(user1)
+  cacheUser(user2)
+
+  user1 = null
+
+  console.log(cache.has(user1)); // false
+  console.log(cache.get(user1)); // undefined
+
+  console.log(cache.has(user2)); // true
+  console.log(cache.get(user2)); // 1585483372246
+  
+})();
+
+// Example 2: WeakSet
+
+(function () {
+
+  const users = [
+    {name: 'Elena'},
+    {name: 'Ruslan'},
+    {name: 'Larisa'}
+  ]
+
+  const visits = new WeakSet()
+
+  visits
+    .add(users[0])
+    .add(users[1])
+
+  // Удаляем один элемент по индексу 1
+  users.splice(1, 1)
+
+  console.log(visits.has(users[0])); // true
+  console.log(visits.has(users[1])); // false
+
+})();
+
+//*****************************************************//
