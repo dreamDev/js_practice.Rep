@@ -1,0 +1,33 @@
+/* Импорты в стилях такого типа, webpack так же будет нормально воспринимать и работать с ними */
+/* То есть webpack не позволняет работать css с чистыми его импортами, а он сам обрабатывает эти импорты */
+/* Но учитывая, что файл стилей roboto ссылается на файл ttf формата, нам нужно указать лоадер для шрифтовых екстеншенов, что бы не получить ошибку. */
+@import 'roboto.css';
+/* Что бы подключить необходимую библиотеку для стилей сначала нужно установить пакет в dependencies, а затем указать в пути тильду '~', которая означает, что нужно зайти в папку node_modules и там найти файл. */
+@import '~normalize.css';
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.container {
+  padding-top: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+.logo {
+  background-image: url('../assets/logo.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin: 0 auto;
+  width: 400px;
+  height: 300px;
+}
+
+.code {
+  color: darkolivegreen;
+}
