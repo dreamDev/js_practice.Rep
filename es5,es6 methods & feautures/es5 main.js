@@ -445,7 +445,68 @@ array - сам массив.
 
 //*****************************************************//
 
+(function(){
+
+  // Example 1:
+
+  // Предположим мы имеем 10 кнопок
+  // В данном примере мы ожидаем, что цикл пробежит по всем кнопкам, запишет в HTML ее порядковый номер, и затем, когда мы будем кликать по ней, будет выводиться порядковый номер.
+  // Но вопреки ожиданиям, каждая кнопка будет выводить число 10, так как значение i в handler функции, при клике, будет браться из global scope, потому что цикл и переменная var i находится в глобальной области видимости, и когда цикл закончится, переменная i будет сохранена в global scope со значением 10.
+
+  // for (var i = 0; i < buttons.length; i++) {
+  //   buttons[i].innerHTML = i;
+  //   buttons[i].onclick = function() {
+  //     console.log(i)
+  //   }
+  // }
+
+  // Решение проблемы через замыкание.
+  // В данном примере, мы создаем внутри handler функции другую функцию, которая возьмет значение i из своего внешнего scope(т.е. из handler функции).
+  // А функцию handler, мы будем вызывать на каждой итерации и передавать в нее ТЕКУЩЕЕ значение i, тем самым сохраняя значение i в local scope handler функции.
+  // И теперь, при клике на кнопку, будет выводиться именно ее порядковый номер, так как при клике будет срабатывать внутренняя функция в лексическом окружении которой, будет храниться значение i.
+
+  // for (var i = 0; i < buttons.length; i++) {
+  //   buttons[i].innerHTML = i;
+  //   buttons[i].onclick = function(currentValue) {
+  //     return function() {
+  //       console.log(currentValue)
+  //     }
+  //   }(i);
+  // }
+
+  // Аналогичный пример
+  // Ожидаем что вызов функции во втором цикле будет выводить порядковый номер i, но получяем цифру 3 на каждой итерации.
+  // Это происходит все по той же причине, анонимая функция берет значение i из global scope, в котором i = 3.
+
+  // var funcs = [];
+  // for (var i = 0; i < 3; i++) {
+  //   funcs[i] = function () {
+  //     console.log("i value is " + i);
+  //   };
+  // }
+
+  // for (var j = 0; j < 3; j++) {
+  //   funcs[j]();
+  // }
+
+  // Аналогичное решение проблемы через замыкание
+
+  // var funcs = [];
+  // for (var i = 0; i < 3; i++) {
+  //   funcs[i] = (function(value) {
+  //     console.log("i value is " + value);
+  //   })(i);
+  // }
+
+  // for (var j = 0; j < 3; j++) {
+  //   funcs[j]();
+  // }
+
+})();
+
 (function () {
+
+  // Example 2:
 
   var person1 = { name: 'Darrel', age: 22, job: 'Frontend' };
   var person2 = { name: 'Kevin', age: 27, job: 'Backend' };
@@ -467,8 +528,8 @@ array - сам массив.
     }
   }
 
-  bind(person1, logPersonAndSummArgs)(1, 5, 4); // Person: Darrel, 22, Result: 10
-  bind(person2, logPersonAndSummArgs)(23, 34, 1); // Person: Kevin, 27, Result: 58
+  bind(person1, logPersonAndSummArgs)(1, 5, 4); // Person: Darrel, 22, Frontend, Result: 10
+  bind(person2, logPersonAndSummArgs)(23, 34, 1); // Person: Kevin, 27, Backend, Result: 58
 
 })();
 
@@ -520,6 +581,40 @@ array - сам массив.
     arr.push({ i: i });
   }
   console.timeEnd('Tested Array'); // Tested Array: 0.365966796875ms
+
+})();
+
+//*****************************************************//
+
+
+/* local storage 
+
+Необходимо помнить, что local storage может работать только со String типом данных.
+
+LocalStorage это синхронное API прямо связанное с нагрузками на дисковую подсистему. Иными словами, когда один код работает с LocalStorage то другой код(вне зависимости от того в какой он вкладке и к какому домену относится) ждет, пока такая работа завершиться.  
+
+*/
+
+//*****************************************************//
+
+(function () {
+
+  const myNumber = 42
+
+  const user = {
+    name: 'Max',
+    age: 20
+  }
+
+  localStorage.setItem('number', myNumber.toString())
+  localStorage.setItem('user', JSON.stringify(user))
+
+  const stringObj = localStorage.getItem('user')
+  const person = JSON.parse(stringObj)
+  person.name = 'Ruslan'
+
+  console.log(person) // {name: "Ruslan", age: 20}
+
 
 })();
 

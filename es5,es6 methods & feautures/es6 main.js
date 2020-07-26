@@ -104,8 +104,9 @@
   // Метод копирования через Object.assign на es5
   // Метод Object.assign() используется для копирования значений всех собственных перечисляемых свойств из одного или более исходных объектов в целевой объект. После копирования он возвращает целевой объект.
   // Необходимо учитывать, что свойства с одинаковыми ключами перетерираются свойствами из последующих объектов в списке аргументов, как например свойство difficult.
-  const person = Object.assign(user, job); // {name: "Tom", age: 22, difficult: "hard", pos: "Frontend", level: "Middle"}
-  console.log(person);
+  const person = Object.assign(user, job);
+
+  console.log(person); // {name: "Tom", age: 22, difficult: "hard", pos: "Frontend", level: "Middle"}
 
   // Метод клонирования через Spread на es6.
   // В этой реализации свойства с одинаковым именем также перетираются как и в предыдущем примере с Object assign().
@@ -204,12 +205,23 @@
   console.log(greet('', 25)); // Hello Tom, your age is 25!
 
   // es6 реализация присваивания дефолтных значений. Теперь нам не нужно создавать переменные с такими же именами в теле функции.
-  function anotherGreet(name = 'Tom', age = 20) {
+  const anotherGreet = (name = 'Tom', age = 20) => {
     return `Hello ${name}, your age is ${age}!`;
   }
 
   console.log(anotherGreet()); // Hello Tom, your age is 20!
   console.log(anotherGreet('Nina', 18)); // Hello Nina, your age is 18!
+  
+
+  const defaultC = 30;
+  const getDefault = c => c * 2;
+  
+  // В качестве default параметров мы так же можем указывать переменные или результат вызова функции.
+  const compute = (a = 10, b = getDefault(a), c = defaultC) => {
+    return a + b + c;
+  }
+
+  console.log(compute()); // 60
 
   // Example 2: arrow function syntax
 
@@ -257,7 +269,7 @@
 
   // Example 4: Context:
 
-  // Потеря this и решение проблемы с помощью замыкания es5.
+  // Потеря this.
   let person = {
     userName: 'Jack',
     greet: function () {
@@ -269,7 +281,7 @@
 
   person.greet(); // this.userName = undefined, this = Window {...}
 
-  // Решение потери this с помошью замыкания.
+  // Решение потери this с помошью замыкания es5.
   let anotherPerson = {
     userName: 'Jack',
     greet: function () {
@@ -479,24 +491,29 @@
 
   console.log(person); // {name: "Lena", age: "27", job: "Frontend"}
 
-// Example 2: Объектный литерал
+  // Example 2: Объектный литерал
 
-  let phone = '333-666';
-  let adress = 'Baltic street 13';
-  let gender = 'male';
+  let job = 'Backend'
+  let cityField = () => 'calculatedCity'
 
-  const citizen = {
-    name: 'Vasya',
-    phone,
-    adress,
-    gender,
-    saiHi() {
-      console.log('Hello', this.name);
+  const user = {
+    name: 'Alina',
+    age: 23,
+    isActive: true,
+    job,
+    [cityField()]: 'Barnaul',
+    'country-live': 'Russia',
+    print: () => 'Person',
+    toString() {
+      return Object
+        .keys(this)
+        .filter(key => key !== 'toString')
+        .map(key => this[key])
+        .join(' ')
     }
   }
 
-  console.log(citizen); // {name: "Vasya", phone: "333-666", adress: "Baltic street 13", gender: "male", saiHi: ƒ}
-  citizen.saiHi(); // Hello Vasya
+  console.log(user.toString()) // Alina 23 true Backend Barnaul Russia () => 'Person'
 
 })();
 
@@ -525,14 +542,14 @@ Class expression:
 
     // Определяем свтические свойства и методы, которые будут присутствовать только у самого КЛАССА, в данном случае Animal. В инстансе lion доступа к ним не будет.
     // Но следует помнить, что статические методы и свойства будут доступны наследуемым КЛАССАМ.
+    // Чтобы использовать статические свойства и методы, нужно обратиться к самому классу, например: Animal.jump()
     static type = 'ANIMAL'
     static jump() {
       let counter = 0;
       let interval = setInterval(() => {
         console.log('Animal is jumping');
         counter++;
-        if (counter == 3)
-        clearInterval(interval);
+        if (counter == 3) clearInterval(interval);
       }, 1500)
     }
 
