@@ -1,3 +1,12 @@
+// MVP имеет три основных компонента: 
+// Model — отвечает за данные, а также за методы получения, сохранения и обработки этих данных.
+// View — отвечает за визуальное представление данных.
+// Presenter — посредник между View и Model, он получает команды с View, обрабатывает данные, при необходимости обращаясь к Model, и передает результат обратно во View. 
+
+//Presenter контролирует взаимодействие между Model и View, накладывая следующие ограничения: View не имеет доступа к Model, Presenter привязан к одному View, View полностью пассивен, его задача заключается в отображении данных и передаче команд в Presenter.
+
+// Между Model и Presenter так же может быть реализован Observer, для того, что бы если Model изменился не его Presenter'ом, он(Presenter) отреагировал на изменения и обновил View.
+
 class Model {
 
   todoData = [];
@@ -16,7 +25,7 @@ class Model {
     this.todoData.push(
       {
         userId: 1,
-        id: this.todoData.length,
+        id: ++this.todoData.length,
         title: val,
         completed: false
       }
@@ -91,7 +100,7 @@ class View {
         <button class="js-remove-todo">&#10008;</button>
         ${el.title}
         <input type="checkbox" ${el.completed ? 'checked' : ''}/>
-      </li>`)
+      </li>`).join('')
   }
 
   getEl() {
