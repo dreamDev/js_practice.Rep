@@ -1,0 +1,23 @@
+{
+  "name": "jest_base_practice",
+  "version": "1.0.0",
+  "description": "Jest edu",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "unit",
+    "testing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  },
+  "dependencies": {
+    "axios": "^0.21.0"
+  }
+}
